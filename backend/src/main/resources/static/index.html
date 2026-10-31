@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EduManager - Demo</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; max-width: 880px; margin-inline: auto; color: #1d2433; background: #f7f8fb; }
+  h1 { margin: 0 0 4px; } p.sub { margin: 0 0 20px; color: #5b6478; }
+  section { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.08); overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; } th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #e6e9f0; }
+  .bar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: #e6e9f0; min-width: 160px; }
+  .p { background: #2e9e6b; } .l { background: #e0a526; } .a { background: #d9534f; }
+</style>
+</head>
+<body>
+<h1>EduManager</h1>
+<p class="sub">Demo con datos ficticios. API REST en <code>/api/students</code>, <code>/api/subjects</code>, <code>/api/classrooms</code>, <code>/api/attendances</code>.</p>
+<section><h2>Asistencia por estudiante</h2><table id="summary"><thead><tr><th>Estudiante</th><th>Distribucion</th><th>Asistencia</th></tr></thead><tbody></tbody></table></section>
+<section><h2>Estudiantes</h2><table id="students"><thead><tr><th>Nombre</th><th>Email</th><th>Grado</th></tr></thead><tbody></tbody></table></section>
+<section><h2>Materias</h2><table id="subjects"><thead><tr><th>Materia</th><th>Docente</th></tr></thead><tbody></tbody></table></section>
+<script>
+async function load(path) {
+  const r = await fetch(path);
+  if (!r.ok) throw new Error(path + ' -> HTTP ' + r.status);
+  return r.json();
+}
+function cell(text) { const td = document.createElement('td'); td.textContent = text; return td; }
+function fill(id, rows) {
+  const tb = document.querySelector('#' + id + ' tbody');
+  rows.forEach(cells => { const tr = document.createElement('tr'); cells.forEach(c => tr.appendChild(c instanceof Node ? c : cell(c))); tb.appendChild(tr); });
+}
+function bar(s) {
+  const td = document.createElement('td'); const b = document.createElement('div'); b.className = 'bar';
+  [['p', s.present], ['l', s.late], ['a', s.absent]].forEach(([cls, n]) => {
+    const d = document.createElement('div'); d.className = cls; d.style.width = (100 * n / Math.max(1, s.present + s.late + s.absent)) + '%'; d.title = cls + ': ' + n; b.appendChild(d);
+  });
+  td.appendChild(b); return td;
+}
+Promise.all([load('/api/attendances/summary'), load('/api/students'), load('/api/subjects')]).then(([sum, st, su]) => {
+  fill('summary', sum.map(s => [s.studentName, bar(s), s.attendanceRate + '%']));
+  fill('students', st.map(s => [s.firstName + ' ' + s.lastName, s.email, s.grade]));
+  fill('subjects', su.map(s => [s.name, s.teacher]));
+}).catch(e => { document.body.insertAdjacentHTML('beforeend', '<p style="color:#d9534f">Error cargando datos: ' + e.message + '</p>'); console.error(e); });
+</script>
+</body>
+</html>
