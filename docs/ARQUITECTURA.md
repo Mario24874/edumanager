@@ -25,7 +25,8 @@ Fuera de alcance al inicio: aula virtual propia (se integra con Moodle, Google C
 | 7 | **Finanzas multimoneda** con tipo de cambio versionado y asientos de doble partida | Venezuela opera en bolívares y divisas a la vez. Ver `MODELO-NOTAS-Y-FINANZAS.md`. | Una moneda base con conversión al mostrar. |
 | 8 | **Autenticación local con Spring Security** (usuarios propios, MFA, sin internet) y adaptadores opcionales OIDC (Keycloak, Cognito, Google) | Debe funcionar en un servidor aislado; la nube es opcional. | Depender de un proveedor externo. |
 | 9 | **IA opcional, nunca automática, con persona que aprueba** | Ver §4. | IA obligatoria o que actúa sola. |
-| 10 | **Empaquetado en Docker Compose** + instalador, y guía de AWS con Terraform | Instalable por personal de TI básico; la nube es una variante, no un requisito. | Kubernetes como único camino. |
+| 10 | **Normativa oficial como fuente de configuración** (módulo `regulatory`): agentes de IA especialistas proponen reglas con cita, una persona las aprueba y llegan a las instalaciones como **paquete normativo firmado** | Las reglas académicas y fiscales cambian; deben salir de documentos oficiales, con procedencia, y no codificarse de memoria. Ver `REGULACION-Y-CUMPLIMIENTO.md`. | Codificar las reglas a mano; que la IA cambie la configuración por sí sola. |
+| 11 | **Empaquetado en Docker Compose** + instalador, y guía de AWS con Terraform | Instalable por personal de TI básico; la nube es una variante, no un requisito. | Kubernetes como único camino. |
 
 ## 3. Módulos
 
@@ -51,6 +52,7 @@ solo a su interfaz pública o a sus eventos. Esto lo verifican las pruebas de Sp
 | `documents` | constancias, certificados, PDF, almacenamiento de archivos |
 | `audit` | bitácora inmutable de cambios y lecturas sensibles |
 | `ai` | proveedor de IA conectable, asistentes y controles (ver §4) |
+| `regulatory` | paquetes normativos con citas, aplicación con diferencias y vigencias (los agentes viven en un servicio aparte del proveedor) |
 | `integration` | puertos hacia pasarelas de pago, SMS/WhatsApp, aulas virtuales y servicios de nube |
 
 **Dependencias permitidas:** `identity`, `institution`, `audit` y `communication` son transversales. El resto depende de `people` y
@@ -79,6 +81,7 @@ Solo con autorización expresa de la institución y datos seudonimizados; lo res
 | **Adaptar el formato oficial de la autoridad educativa** | El usuario sube el documento de referencia (PDF o Excel). La IA lo analiza (campos, columnas, orden, firmas) y propone un **perfil de exportación**; una persona lo revisa y lo versiona. La exportación real la hace código determinista, no la IA. | Solo el formato, sin datos de estudiantes |
 | **Generar horarios, asignar secciones y aulas** | Un **solver de restricciones** (Timefold Solver, Java, Apache 2.0), no un modelo de lenguaje. Restricciones: disponibilidad docente, capacidad de aula, modalidad, bloques seguidos, carga horaria. La IA, si se activa, solo convierte restricciones escritas en lenguaje natural a restricciones estructuradas y explica conflictos. | Datos de horarios y aulas, sin notas ni expedientes |
 | **Consultas en lenguaje natural sobre reportes** | Sobre vistas de solo lectura, con los permisos del usuario que pregunta. | Según permisos; C3 excluido |
+| **Vigilar y proponer normativa** (módulo `regulatory`) | Dos agentes con base de conocimiento de documentos oficiales y citas verificadas; flujo con LangGraph; propuestas que revisa una persona. Ver `REGULACION-Y-CUMPLIMIENTO.md`. | Solo documentos públicos, sin datos de estudiantes |
 | **Redacción de comunicados y resúmenes de informes** | Borrador que una persona edita y envía. | Sin datos restringidos |
 
 Justificación del solver: horarios y asignación de aulas son un problema de optimización con restricciones, donde un solver da resultados
@@ -100,25 +103,30 @@ verificables y repetibles; un modelo de lenguaje por sí solo no garantiza que n
 3. **AWS (referencia):** Terraform con VPC, RDS PostgreSQL, S3 (documentos y exportaciones), SES (correo), ECS Fargate o EC2 con Compose (opción económica), CloudFront para el frontend, Secrets Manager y CloudWatch. S3 y Athena o Redshift quedan para análisis agregados en la nube, no para operar.
 4. **Otras nubes o Kubernetes:** posible después con el mismo contenedor; no es parte de la primera entrega.
 
-## 7. Fases
+## 7. Condición de arranque y fases
+
+**Condición de arranque:** no se ejecuta nada de este diseño (código, instalación, servicios) hasta que se eliminen los proyectos y servicios de Italianto del VPS y se libere espacio suficiente.
+Hoy el disco está al 93 % (7,5 GB libres). Hasta entonces solo se escribe planificación. Meta sugerida antes de arrancar: disco por debajo del 70 % y al menos 25 GB libres para JDK, Maven, Node, imágenes de Docker y PostgreSQL.
+
+### Fases
 
 | Fase | Entrega | Criterio de «hecho» |
 |---|---|---|
 | 0 | Esta documentación y la estructura del repo | Documentos revisados por Mario |
 | 1 | `identity`, `institution`, `people` + Java 21 + PostgreSQL + Flyway + Angular base + empaquetado Compose | Instalar con un comando, iniciar sesión con MFA, crear institución, usuarios y roles con alcance |
-| 2 | `academic`, `enrollment`, **`assessment` (escalas, notas, historial)** | Un alumno de prueba recorre las tres escalas y su historial se consulta completo; **es la demo del portafolio** |
+| 2 | `academic`, `enrollment`, **`assessment` (escalas, notas, historial)** + paquete normativo manual con citas (R0) | Un alumno de prueba recorre las tres escalas y su historial se consulta completo; **es la demo del portafolio** |
 | 3 | `attendance`, `scheduling` (solver), boletines | Horario generado sin choques; boletín PDF |
 | 4 | `finance` multimoneda | Cargo en USD pagado en VES con el cambio del día; asientos cuadrados |
 | 5 | `communication`, alertas por rol | Alertas por inasistencia y por mora, por rol |
 | 6 | `activities`, `welfare` | Caso con equipo y registro de lecturas |
-| 7 | `reporting` oficial, IA conectable, despliegue AWS | Perfil de exportación adaptado desde un formato real; guía de AWS probada |
+| 7 | `reporting` oficial, IA conectable, despliegue AWS; agentes de normativa (R1–R4 de `REGULACION-Y-CUMPLIMIENTO.md`) | Perfil de exportación adaptado desde un formato real; guía de AWS probada |
 
 Cada fase termina con pruebas automáticas (JUnit, Testcontainers con PostgreSQL, pruebas de fronteras de módulos) y una demostración.
 
 ## 8. Riesgos, supuestos y validaciones pendientes
 
-- **Normativa oficial no incorporada.** Reglas de aprobación, repitencia, formatos de entrega a zonas educativas y al Ministerio se configuran como datos y se validan contra la normativa y los formatos reales cuando Mario los consiga. No se codifican de memoria.
-- **Aspectos fiscales y contables** (facturación, IVA, impuestos sobre pagos en divisas): se modelan como reglas configurables por país y se validan con un contador antes de producción.
+- **Normativa oficial.** La normativa es pública. Reglas de aprobación, repitencia, formatos de entrega y reglas fiscales se configuran como datos, con procedencia, mediante el módulo `regulatory` (primero carga manual con citas; después agentes que proponen y una persona aprueba). No se codifican de memoria.
+- **Aspectos fiscales y contables** (facturación, IVA, impuestos sobre pagos en divisas): reglas configurables por país que provienen de la normativa del SENIAT; un contador las revisa antes de producción.
 - **Protección de datos de menores:** validación legal pendiente (§5).
 - **Alcance grande:** el orden de fases lo controla; cada fase es utilizable por sí sola.
 - **Código existente:** el `backend/` actual (Student, Subject, Classroom, Attendance con H2) es una demo; se reorganiza por módulos y se migra a PostgreSQL en la fase 1.

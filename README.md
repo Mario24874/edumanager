@@ -11,6 +11,7 @@ adaptable a otros países. Se instala como paquete en servidores propios o VPS, 
 - [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md): decisiones, módulos, IA, despliegue, fases.
 - [`docs/MODELO-NOTAS-Y-FINANZAS.md`](docs/MODELO-NOTAS-Y-FINANZAS.md): evaluación con escalas de letras, 01–20 y 1–10; finanzas multimoneda.
 - [`docs/ACCESO-Y-CONFIDENCIALIDAD.md`](docs/ACCESO-Y-CONFIDENCIALIDAD.md): roles, niveles de autoridad y confidencialidad.
+- [`docs/REGULACION-Y-CUMPLIMIENTO.md`](docs/REGULACION-Y-CUMPLIMIENTO.md): módulo de normativa oficial y agentes especialistas.
 - [`docs/REFACTOR-PLAN.md`](docs/REFACTOR-PLAN.md): estado encontrado el 31-oct-2026 y primer paso.
 
 ## Demo actual del backend
