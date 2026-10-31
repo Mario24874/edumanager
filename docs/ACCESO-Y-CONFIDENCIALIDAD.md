@@ -26,7 +26,7 @@ rol, alcance, autoridad y clase del dato.
 
 ## 3. Roles
 
-Todos los roles son configurables por la institución; estos son los iniciales. Un usuario puede acumular roles (por ejemplo docente y coordinador).
+Todos los roles son configurables por la institución; estos son los iniciales, con nombres neutrales que la terminología de cada país traduce («representante» o «tutor», por ejemplo). Al crear un usuario, el administrador elige un **cargo** («Secretaria de control de estudios», «Docente») y el sistema aplica el conjunto de permisos correcto; los permisos finos son un modo avanzado. Un usuario puede acumular roles (por ejemplo docente y coordinador).
 
 | Rol | Autoridad típica | Alcance | Ve / hace |
 |---|---|---|---|

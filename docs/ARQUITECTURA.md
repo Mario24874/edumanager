@@ -4,7 +4,7 @@ Versión 0.1 · 31-oct-2026 · Estado: **diseño aprobado por Mario**, implement
 
 ## 1. Objetivo y alcance
 
-Software modular para instituciones educativas (escolares y universitarias, públicas o privadas) de Venezuela, adaptable a otros países.
+Software modular y **genérico** para instituciones educativas (escolares y universitarias, públicas o privadas) de cualquier país. Venezuela es el **primer perfil de jurisdicción**, no la base del sistema (ver `GENERICO-Y-USABILIDAD.md`).
 Se instala como paquete en servidores propios o VPS y, opcionalmente, en la nube (AWS de referencia).
 Cubre lo administrativo, contable y académico: personas, estructura académica, inscripciones y matrícula, horarios y aulas
 (presencial, remota, híbrida), evaluación con escalas distintas, asistencia, finanzas multimoneda, comunicaciones y alertas,
@@ -26,7 +26,8 @@ Fuera de alcance al inicio: aula virtual propia (se integra con Moodle, Google C
 | 8 | **Autenticación local con Spring Security** (usuarios propios, MFA, sin internet) y adaptadores opcionales OIDC (Keycloak, Cognito, Google) | Debe funcionar en un servidor aislado; la nube es opcional. | Depender de un proveedor externo. |
 | 9 | **IA opcional, nunca automática, con persona que aprueba** | Ver §4. | IA obligatoria o que actúa sola. |
 | 10 | **Normativa oficial como fuente de configuración** (módulo `regulatory`): agentes de IA especialistas proponen reglas con cita, una persona las aprueba y llegan a las instalaciones como **paquete normativo firmado** | Las reglas académicas y fiscales cambian; deben salir de documentos oficiales, con procedencia, y no codificarse de memoria. Ver `REGULACION-Y-CUMPLIMIENTO.md`. | Codificar las reglas a mano; que la IA cambie la configuración por sí sola. |
-| 11 | **Empaquetado en Docker Compose** + instalador, y guía de AWS con Terraform | Instalable por personal de TI básico; la nube es una variante, no un requisito. | Kubernetes como único camino. |
+| 11 | **Núcleo genérico + perfiles de jurisdicción** y **facilidad de uso para personal no técnico** como requisitos de diseño | Casi todos los países gestionan la educación de forma parecida; lo que cambia (niveles, escalas, periodos, documentos, impuestos, terminología) es dato del perfil. Los usuarios no son técnicos. Ver `GENERICO-Y-USABILIDAD.md`. | Código con reglas de un país; interfaz pensada para técnicos. |
+| 12 | **Empaquetado en Docker Compose** + instalador, y guía de AWS con Terraform | Instalable por personal de TI básico; la nube es una variante, no un requisito. | Kubernetes como único camino. |
 
 ## 3. Módulos
 
@@ -94,7 +95,7 @@ verificables y repetibles; un modelo de lenguaje por sí solo no garantiza que n
 - MFA obligatorio para administración, finanzas, control de estudios y consejería. Contraseñas con hash fuerte, TLS, cifrado de columnas sensibles.
 - Bitácora de solo añadir de notas, pagos, matrícula y lecturas de C3. Cambios de nota con versión, motivo y aprobación.
 - Respaldos programados y verificados; plan de continuidad ante apagones y conectividad limitada (operación en red local sin internet).
-- Datos de menores: validar con asesoría legal el cumplimiento de la normativa venezolana aplicable (por ejemplo la LOPNNA) antes de producción.
+- Datos de menores: validar con asesoría legal el cumplimiento de la normativa de protección de datos y de menores del país de cada perfil (en Venezuela, por ejemplo, la LOPNNA) antes de producción.
 
 ## 6. Empaquetado y despliegue
 
@@ -112,7 +113,7 @@ Hoy el disco está al 93 % (7,5 GB libres). Hasta entonces solo se escribe plani
 
 | Fase | Entrega | Criterio de «hecho» |
 |---|---|---|
-| 0 | Esta documentación y la estructura del repo | Documentos revisados por Mario |
+| 0 | Esta documentación y la estructura del repo; **prueba de genericidad sobre el papel** con dos perfiles además del venezolano | Documentos revisados por Mario; el modelo resiste los dos perfiles de prueba |
 | 1 | `identity`, `institution`, `people` + Java 21 + PostgreSQL + Flyway + Angular base + empaquetado Compose | Instalar con un comando, iniciar sesión con MFA, crear institución, usuarios y roles con alcance |
 | 2 | `academic`, `enrollment`, **`assessment` (escalas, notas, historial)** + paquete normativo manual con citas (R0) | Un alumno de prueba recorre las tres escalas y su historial se consulta completo; **es la demo del portafolio** |
 | 3 | `attendance`, `scheduling` (solver), boletines | Horario generado sin choques; boletín PDF |

@@ -27,7 +27,7 @@ grading_scale_level                             -- solo LETTER / DESCRIPTIVE
 program_scale                                   -- qué escala usa cada programa/nivel y desde cuándo
   id, program_id (o level_id), scale_id, valid_from, valid_to
 ```
-Ejemplos de configuración (valores concretos a confirmar con la normativa vigente):
+**Ejemplos del perfil de Venezuela** (valores concretos a confirmar con la normativa vigente; otros países cargan sus propias escalas, incluso con promedio ponderado o créditos):
 
 | Etapa | Tipo | Rango | Notas |
 |---|---|---|---|
