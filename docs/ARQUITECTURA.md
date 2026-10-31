@@ -108,7 +108,7 @@ verificables y repetibles; un modelo de lenguaje por sí solo no garantiza que n
 ## 7. Condición de arranque y fases
 
 **Condición de arranque:** no se ejecuta nada de este diseño (código, instalación, servicios) hasta que se eliminen los proyectos y servicios de Italianto del VPS y se libere espacio suficiente.
-Hoy el disco está al 93 % (7,5 GB libres). Hasta entonces solo se escribe planificación. Meta sugerida antes de arrancar: disco por debajo del 70 % y al menos 25 GB libres para JDK, Maven, Node, imágenes de Docker y PostgreSQL.
+Al cierre del 31-oct el disco está al 96 % (4,5 GB libres). Hasta entonces solo se escribe planificación. Meta antes de arrancar: **mínimo 12 GB libres (disco en torno al 87 %)**, ideal 25 GB, para JDK, Maven, Node, imágenes de Docker y PostgreSQL. La limpieza de Italianto (~0,8 GB de imágenes) no alcanza por sí sola: hace falta auditar el uso del disco (ver `AGENDA.md` de la tienda).
 
 ### Fases
 
