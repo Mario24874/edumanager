@@ -29,7 +29,7 @@ Un país (o región dentro de un país) se describe con un **perfil** que se car
 | Terminología | nombre local de cada concepto | «representante» o «tutor», «lapso» o «periodo» |
 | Idioma, calendario y zona horaria | formatos de fecha, número y moneda | según la región |
 
-El perfil de **Venezuela** es el primero. Un segundo perfil se modela **sobre el papel antes de construir**, como prueba de que el núcleo es realmente genérico (ver §6).
+El perfil de **Venezuela** es el primero. La genericidad del núcleo se prueba con **perfiles sintéticos antes de construir** (ver §6).
 
 ## 3. Qué significa «genérico» en el modelo de datos
 
@@ -52,7 +52,7 @@ Estándares públicos a tener en cuenta para intercambiar datos con otros sistem
 3. Los agentes (académico y fiscal) recolectan, leen y proponen un borrador de perfil con citas
 4. Un revisor local (educador o administrador del país y un contador) valida y corrige
 5. Se publica el perfil como paquete firmado
-6. Una institución piloto lo prueba antes de abrirlo a más
+6. La primera institución cliente de ese país lo confirma antes de abrirlo a más
 ```
 La IA reduce el trabajo, pero **en un país nuevo hace falta revisión de una persona que conozca ese sistema educativo**. Si las fuentes oficiales de un país no están en línea o no son claras, esa parte la investiga una persona.
 Para cada perfil nuevo también se necesita la traducción de la interfaz y de las plantillas de documentos.
@@ -94,21 +94,19 @@ Ejemplos de criterios: inscribir a un estudiante, cargar las notas de una secci�
 
 ## 6. Cómo evitar sesgo hacia Venezuela
 
-- **Prueba de genericidad:** antes de construir las fases 1 y 2, se modelan **sobre el papel** dos perfiles distintos del venezolano para ver qué parte del diseño se rompe. Propuesta:
-  1. un país hispanohablante cercano (Colombia o México), por mercado;
-  2. un sistema con promedio ponderado (GPA) y créditos, como Estados Unidos, por contraste.
+- **Prueba de genericidad con perfiles sintéticos** (no con países concretos): antes de las fases 1 y 2 se modela, sobre el papel, un conjunto de perfiles de prueba que estiran cada dimensión en la que los países pueden variar (año escolar, evaluación, estructura, documentos, identificación, fiscal, reportes, idioma). Ver `CONFIGURACION-GUIADA.md` §7. El modelo debe expresarlos todos sin cambiar código.
 - Cada vez que se agrega una regla se pregunta: ¿es de todos los países o de uno? Si es de uno, va al perfil.
-- Revisión de los términos de los documentos y de la interfaz para que el núcleo no hable de «lapsos», «zona educativa» o «cédula» salvo a través de la terminología del perfil.
+- Revisión de términos de documentos e interfaz: el núcleo no habla de «lapsos», «zona educativa» o «cédula» salvo a través de la terminología del perfil.
 
-## 7. Apoyo de personas que conocen el dominio
+## 7. Sin experto del oficio ni país conocido
 
-La gestión educativa tiene reglas cotidianas que los documentos legales no explican (cómo se trabaja un cierre de lapso, qué papeles se piden en una inscripción). Por eso se propone:
-- **Una institución piloto** que use el sistema desde las primeras fases y dé retroalimentación.
-- **Un asesor del dominio** (un coordinador académico o jefe de control de estudios con experiencia) que revise los flujos y la terminología.
-- Los agentes y la documentación pública fundamentan las **reglas**; las personas del oficio validan los **procesos**.
+El equipo del proveedor no conoce la gestión educativa y no sabe qué país pedirá el software. Por eso:
+- El **sistema guía al operador** con preguntas justificadas por la normativa (`CONFIGURACION-GUIADA.md`).
+- Quien **confirma** cada respuesta es el personal de control de estudios o administración de la propia institución; esa es la validación del oficio en cada instalación.
+- Si no existe un perfil para el país, el sistema funciona con un **perfil base genérico** y permite **solicitar el perfil**.
+- Los perfiles nuevos se revisan con una persona local, normalmente la primera institución cliente de ese país.
 
-## 8. Pendientes de definir con Mario
+## 8. Pendientes
 
-1. Segundo perfil de prueba sobre el papel: ¿Colombia o México, y Estados Unidos como contraste?
-2. Institución piloto candidata y persona asesora del dominio.
-3. Idiomas de la interfaz del primer lanzamiento (español, inglés).
+1. Mario confirma el flujo de `CONFIGURACION-GUIADA.md`.
+2. Idiomas: español e inglés desde el primer lanzamiento (decisión de Mario). Política en `ARQUITECTURA.md`, decisión 13.

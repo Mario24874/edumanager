@@ -95,7 +95,10 @@ R0 va junto con la fase 2 del producto (motor de notas). R1–R4 después de la 
 ## 9. Alta de un país nuevo
 El mismo mecanismo sirve para otros países: una persona aporta las fuentes oficiales iniciales (ministerio, autoridad tributaria, diario oficial), los agentes proponen un borrador de **perfil de jurisdicción** con citas, y un revisor local lo valida antes de publicarlo. Ver `GENERICO-Y-USABILIDAD.md` §4. Los agentes no sustituyen a alguien que conozca el sistema educativo del país.
 
-## 10. Pendientes de definir con Mario
+## 10. Relación con la configuración guiada
+Cada regla del paquete alimenta el cuestionario del asistente de `CONFIGURACION-GUIADA.md`: pregunta, explicación, cita y valores permitidos. Así el operador no necesita conocer la normativa para configurar conforme a ella.
+
+## 11. Pendientes de definir con Mario
 
 1. Lista inicial de documentos oficiales por agente, con su URL y vigencia (la arma una persona; el agente no decide qué es oficial).
 2. Quién será el **revisor humano** de cada agente (jurídico, control de estudios, contador).

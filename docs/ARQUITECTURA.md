@@ -28,6 +28,7 @@ Fuera de alcance al inicio: aula virtual propia (se integra con Moodle, Google C
 | 10 | **Normativa oficial como fuente de configuración** (módulo `regulatory`): agentes de IA especialistas proponen reglas con cita, una persona las aprueba y llegan a las instalaciones como **paquete normativo firmado** | Las reglas académicas y fiscales cambian; deben salir de documentos oficiales, con procedencia, y no codificarse de memoria. Ver `REGULACION-Y-CUMPLIMIENTO.md`. | Codificar las reglas a mano; que la IA cambie la configuración por sí sola. |
 | 11 | **Núcleo genérico + perfiles de jurisdicción** y **facilidad de uso para personal no técnico** como requisitos de diseño | Casi todos los países gestionan la educación de forma parecida; lo que cambia (niveles, escalas, periodos, documentos, impuestos, terminología) es dato del perfil. Los usuarios no son técnicos. Ver `GENERICO-Y-USABILIDAD.md`. | Código con reglas de un país; interfaz pensada para técnicos. |
 | 12 | **Empaquetado en Docker Compose** + instalador, y guía de AWS con Terraform | Instalable por personal de TI básico; la nube es una variante, no un requisito. | Kubernetes como único camino. |
+| 13 | **Idiomas:** inglés como idioma de trabajo del código, la base de datos, la API, los commits y la documentación técnica; **interfaz y documentos para el usuario en español e inglés** desde el primer lanzamiento, con textos externalizados (i18n) y el inglés como idioma de origen | Buenas prácticas del sector y audiencia internacional (portafolio y otros países); el usuario final ve su idioma. Cada perfil de país trae sus textos en ambos idiomas. | Código y esquema en español. |
 
 ## 3. Módulos
 
@@ -113,7 +114,7 @@ Hoy el disco está al 93 % (7,5 GB libres). Hasta entonces solo se escribe plani
 
 | Fase | Entrega | Criterio de «hecho» |
 |---|---|---|
-| 0 | Esta documentación y la estructura del repo; **prueba de genericidad sobre el papel** con dos perfiles además del venezolano | Documentos revisados por Mario; el modelo resiste los dos perfiles de prueba |
+| 0 | Esta documentación y la estructura del repo; **prueba de genericidad sobre el papel** con perfiles sintéticos y revisión en inglés de los documentos técnicos | Documentos revisados por Mario; el modelo expresa todos los perfiles de prueba sin cambiar código |
 | 1 | `identity`, `institution`, `people` + Java 21 + PostgreSQL + Flyway + Angular base + empaquetado Compose | Instalar con un comando, iniciar sesión con MFA, crear institución, usuarios y roles con alcance |
 | 2 | `academic`, `enrollment`, **`assessment` (escalas, notas, historial)** + paquete normativo manual con citas (R0) | Un alumno de prueba recorre las tres escalas y su historial se consulta completo; **es la demo del portafolio** |
 | 3 | `attendance`, `scheduling` (solver), boletines | Horario generado sin choques; boletín PDF |
