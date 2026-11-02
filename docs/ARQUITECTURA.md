@@ -1,6 +1,6 @@
 # EduManager — Arquitectura
 
-Versión 0.1 · 31-oct-2026 · Estado: **diseño aprobado por Mario**, implementación por fases.
+Versión 0.2 · 1-nov-2026 · Estado: **diseño aprobado por Mario**, implementación por fases. (0.2: motores de IA elegibles por niveles y plantillas de documentos, ver `IA-MOTORES-Y-PLANTILLAS.md`.)
 
 ## 1. Objetivo y alcance
 
@@ -29,6 +29,8 @@ Fuera de alcance al inicio: aula virtual propia (se integra con Moodle, Google C
 | 11 | **Núcleo genérico + perfiles de jurisdicción** y **facilidad de uso para personal no técnico** como requisitos de diseño | Casi todos los países gestionan la educación de forma parecida; lo que cambia (niveles, escalas, periodos, documentos, impuestos, terminología) es dato del perfil. Los usuarios no son técnicos. Ver `GENERICO-Y-USABILIDAD.md`. | Código con reglas de un país; interfaz pensada para técnicos. |
 | 12 | **Empaquetado en Docker Compose** + instalador, y guía de AWS con Terraform | Instalable por personal de TI básico; la nube es una variante, no un requisito. | Kubernetes como único camino. |
 | 13 | **Idiomas:** inglés como idioma de trabajo del código, la base de datos, la API, los commits y la documentación técnica; **interfaz y documentos para el usuario en español e inglés** desde el primer lanzamiento, con textos externalizados (i18n) y el inglés como idioma de origen | Buenas prácticas del sector y audiencia internacional (portafolio y otros países); el usuario final ve su idioma. Cada perfil de país trae sus textos en ambos idiomas. | Código y esquema en español. |
+| 14 | **Motor de IA elegible por niveles (N0 sin IA, N1 local pequeño, N2 local o VPS mayor, N3 API de pago), con clave o motor propios de cada institución** | Hay instituciones públicas, de bajo presupuesto o sin pago internacional; la IA no puede exigir una suscripción. Ver `IA-MOTORES-Y-PLANTILLAS.md`. | Un único proveedor de pago; que el proveedor revenda IA. |
+| 15 | **Demo de evaluación ligera**, en línea y descargable (paquete portable con base de datos embebida), con datos ficticios y experiencia de usuario cuidada desde los primeros 60 segundos | Nadie compra sin verlo funcionar; el evaluador es el director, no el técnico. Ver `DEMO-EVALUACION.md`. | Exigir Docker o PostgreSQL para probar; pedir registro obligatorio. |
 
 ## 3. Módulos
 
@@ -51,9 +53,9 @@ solo a su interfaz pública o a sus eventos. Esto lo verifican las pruebas de Sp
 | `activities` | actividades extracurriculares, clubes, eventos, cursos, mentorías, acompañamientos |
 | `welfare` | consejería y psicología, casos, seguimiento (acceso restringido) |
 | `reporting` | boletines, resúmenes de notas, estadísticas, informes, perfiles de exportación a la autoridad educativa |
-| `documents` | constancias, certificados, PDF, almacenamiento de archivos |
+| `documents` | constancias, certificados, PDF, almacenamiento de archivos, **plantillas editables y versionadas** (informes, comunicados, notificaciones, oficios) |
 | `audit` | bitácora inmutable de cambios y lecturas sensibles |
-| `ai` | proveedor de IA conectable, asistentes y controles (ver §4) |
+| `ai` | proveedor de IA conectable por niveles, prueba de capacidad, asistentes y controles (ver §4 e `IA-MOTORES-Y-PLANTILLAS.md`) |
 | `regulatory` | paquetes normativos con citas, aplicación con diferencias y vigencias (los agentes viven en un servicio aparte del proveedor) |
 | `integration` | puertos hacia pasarelas de pago, SMS/WhatsApp, aulas virtuales y servicios de nube |
 
@@ -74,13 +76,16 @@ legacy/     esqueletos antiguos (React, web2py); sin mantenimiento
 Reglas (coinciden con las de Mario): la IA **solo actúa cuando un usuario autorizado la pide**, **propone y una persona aprueba**,
 tiene **tope de costo** por institución y deja **registro** de cada uso. Con el proveedor desactivado el sistema funciona completo.
 
-Proveedor conectable (`AiProvider`): desactivado · modelo local (por ejemplo Ollama, para instituciones que no pueden sacar datos) · API en la nube.
+Proveedor conectable (`AiProvider`), elegible en la configuración inicial y **por niveles**: N0 sin IA · N1 modelo pequeño de código abierto en el servidor de la institución · N2 modelo mayor local, con GPU o en un VPS · N3 API de pago en la nube. También se permiten planes gratuitos de la nube con restricciones. Cada institución usa su propio motor o su propia clave; el proveedor no revende IA. Al elegir un motor, el sistema hace una **prueba de capacidad** y le dice a la institución qué funciones puede esperar de él. Detalle en `IA-MOTORES-Y-PLANTILLAS.md`.
 **Los datos de estudiantes (clases C2 y C3, ver `ACCESO-Y-CONFIDENCIALIDAD.md`) no se envían a un servicio externo por defecto.**
-Solo con autorización expresa de la institución y datos seudonimizados; lo restringido (C3) nunca sale.
+Solo con autorización expresa de la institución y datos seudonimizados; lo restringido (C3) nunca sale, ni a un motor local. Un plan gratuito de la nube solo ve formatos en blanco y datos públicos.
+Los agentes de configuración, plantillas y redacción corren **dentro de la instalación de la institución**; solo los de normativa corren del lado del proveedor, sin datos de estudiantes.
 
 | Función | Cómo se hace | Datos que toca |
 |---|---|---|
 | **Adaptar el formato oficial de la autoridad educativa** | El usuario sube el documento de referencia (PDF o Excel). La IA lo analiza (campos, columnas, orden, firmas) y propone un **perfil de exportación**; una persona lo revisa y lo versiona. La exportación real la hace código determinista, no la IA. | Solo el formato, sin datos de estudiantes |
+| **Crear plantillas editables a partir de documentos o imágenes** | El usuario sube un PDF, imagen u otro documento. La IA lee su estructura y propone una **plantilla editable** (textos, logo, campos variables, tablas, firmas) para informes, reportes, notificaciones y comunicados; la institución la edita, una persona autorizada la aprueba y se reutiliza cada vez. Los datos los inserta código determinista. Ver `IA-MOTORES-Y-PLANTILLAS.md` §6. | Solo el formato; los datos del sistema entran al generar el documento, con los permisos del usuario |
+| **Configurar y ajustar el sistema** | El agente lee las normas y documentos que se le pasen y propone configuraciones con cita. La calidad depende del motor. Una persona autorizada revisa, puede pedir cambios en lenguaje natural y aprueba; hay vista previa y cada cambio es reversible. Ver `CONFIGURACION-GUIADA.md`. | Documentos de la institución; sin datos C3 |
 | **Generar horarios, asignar secciones y aulas** | Un **solver de restricciones** (Timefold Solver, Java, Apache 2.0), no un modelo de lenguaje. Restricciones: disponibilidad docente, capacidad de aula, modalidad, bloques seguidos, carga horaria. La IA, si se activa, solo convierte restricciones escritas en lenguaje natural a restricciones estructuradas y explica conflictos. | Datos de horarios y aulas, sin notas ni expedientes |
 | **Consultas en lenguaje natural sobre reportes** | Sobre vistas de solo lectura, con los permisos del usuario que pregunta. | Según permisos; C3 excluido |
 | **Vigilar y proponer normativa** (módulo `regulatory`) | Dos agentes con base de conocimiento de documentos oficiales y citas verificadas; flujo con LangGraph; propuestas que revisa una persona. Ver `REGULACION-Y-CUMPLIMIENTO.md`. | Solo documentos públicos, sin datos de estudiantes |
@@ -108,7 +113,7 @@ verificables y repetibles; un modelo de lenguaje por sí solo no garantiza que n
 ## 7. Condición de arranque y fases
 
 **Condición de arranque:** no se ejecuta nada de este diseño (código, instalación, servicios) hasta que se eliminen los proyectos y servicios de Italianto del VPS y se libere espacio suficiente.
-Al cierre del 31-oct el disco está al 96 % (4,5 GB libres). Hasta entonces solo se escribe planificación. Meta antes de arrancar: **mínimo 12 GB libres (disco en torno al 87 %)**, ideal 25 GB, para JDK, Maven, Node, imágenes de Docker y PostgreSQL. La limpieza de Italianto (~0,8 GB de imágenes) no alcanza por sí sola: hace falta auditar el uso del disco (ver `AGENDA.md` de la tienda).
+Estado del disco: el 1-nov se auditó y limpió (de 92 % con 8,1 GB libres a **63 % con 36 GB libres**), con lo que la meta de espacio (**mínimo 12 GB libres, ideal 25 GB**, para JDK, Maven, Node, imágenes de Docker y PostgreSQL) está cumplida. Queda pendiente la retirada de los servicios de Italianto (ya en escala 0) con el «sí» de Mario y su visto bueno a este diseño antes de la fase 1.
 
 ### Fases
 
@@ -116,12 +121,12 @@ Al cierre del 31-oct el disco está al 96 % (4,5 GB libres). Hasta entonces solo
 |---|---|---|
 | 0 | Esta documentación y la estructura del repo; **prueba de genericidad sobre el papel** con perfiles sintéticos y revisión en inglés de los documentos técnicos | Documentos revisados por Mario; el modelo expresa todos los perfiles de prueba sin cambiar código |
 | 1 | `identity`, `institution`, `people` + Java 21 + PostgreSQL + Flyway + Angular base + empaquetado Compose | Instalar con un comando, iniciar sesión con MFA, crear institución, usuarios y roles con alcance |
-| 2 | `academic`, `enrollment`, **`assessment` (escalas, notas, historial)** + paquete normativo manual con citas (R0) | Un alumno de prueba recorre las tres escalas y su historial se consulta completo; **es la demo del portafolio** |
-| 3 | `attendance`, `scheduling` (solver), boletines | Horario generado sin choques; boletín PDF |
+| 2 | `academic`, `enrollment`, **`assessment` (escalas, notas, historial)** + paquete normativo manual con citas (R0) | Un alumno de prueba recorre las tres escalas y su historial se consulta completo; **es la demo del portafolio y la primera versión en línea de la demo de evaluación** (`DEMO-EVALUACION.md`) |
+| 3 | `attendance`, `scheduling` (solver), boletines + **editor de plantillas de documentos (sin IA)** | Horario generado sin choques; boletín PDF; una plantilla creada a mano y reutilizada |
 | 4 | `finance` multimoneda | Cargo en USD pagado en VES con el cambio del día; asientos cuadrados |
 | 5 | `communication`, alertas por rol | Alertas por inasistencia y por mora, por rol |
 | 6 | `activities`, `welfare` | Caso con equipo y registro de lecturas |
-| 7 | `reporting` oficial, IA conectable, despliegue AWS; agentes de normativa (R1–R4 de `REGULACION-Y-CUMPLIMIENTO.md`) | Perfil de exportación adaptado desde un formato real; guía de AWS probada |
+| 7 | `reporting` oficial, IA conectable por niveles con prueba de capacidad, importación de plantillas con IA, despliegue AWS; agentes de normativa (R1–R4 de `REGULACION-Y-CUMPLIMIENTO.md`) | Perfil de exportación y plantilla editable creados desde un formato real, con un motor local y con uno de nube; guía de AWS probada |
 
 Cada fase termina con pruebas automáticas (JUnit, Testcontainers con PostgreSQL, pruebas de fronteras de módulos) y una demostración.
 
@@ -130,5 +135,6 @@ Cada fase termina con pruebas automáticas (JUnit, Testcontainers con PostgreSQL
 - **Normativa oficial.** La normativa es pública. Reglas de aprobación, repitencia, formatos de entrega y reglas fiscales se configuran como datos, con procedencia, mediante el módulo `regulatory` (primero carga manual con citas; después agentes que proponen y una persona aprueba). No se codifican de memoria.
 - **Aspectos fiscales y contables** (facturación, IVA, impuestos sobre pagos en divisas): reglas configurables por país que provienen de la normativa del SENIAT; un contador las revisa antes de producción.
 - **Protección de datos de menores:** validación legal pendiente (§5).
+- **Calidad de la IA según el motor.** Un modelo local pequeño interpreta peor que uno de pago. Por eso todo lo que la IA propone lo revisa una persona, y el sistema muestra el resultado de la prueba de capacidad. Los modelos de código abierto tienen licencias distintas; se revisan antes de entrar al catálogo (`IA-MOTORES-Y-PLANTILLAS.md` §8).
 - **Alcance grande:** el orden de fases lo controla; cada fase es utilizable por sí sola.
 - **Código existente:** el `backend/` actual (Student, Subject, Classroom, Attendance con H2) es una demo; se reorganiza por módulos y se migra a PostgreSQL en la fase 1.

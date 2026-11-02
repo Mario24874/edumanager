@@ -1,6 +1,6 @@
 # Configuración guiada por el perfil de país
 
-Versión 0.1 · 31-oct-2026 · Estado: **planificación**. Complementa `GENERICO-Y-USABILIDAD.md` y `REGULACION-Y-CUMPLIMIENTO.md`.
+Versión 0.2 · 1-nov-2026 · Estado: **planificación**. Complementa `GENERICO-Y-USABILIDAD.md`, `REGULACION-Y-CUMPLIMIENTO.md` e `IA-MOTORES-Y-PLANTILLAS.md`.
 
 ## 1. Problema
 
@@ -31,15 +31,20 @@ Así el cuestionario cambia con el país sin tocar el programa, y cuando la norm
 
 ## 3. Cómo es la experiencia
 
+0. **Motor de IA (opcional).** Antes de las preguntas se ofrece elegir el motor: sin IA, modelo local de código abierto, modelo en un VPS o API de pago/gratuita. El sistema hace una prueba corta y explica en palabras simples qué esperar. Se puede saltar y activar después; el asistente funciona igual sin IA, con preguntas fijas.
 1. **Selección de país.** Si existe el perfil, se carga. Si no existe, ver §6.
 2. **Preguntas por secciones**, una idea por pantalla: «¿Qué tipo de institución es?», «¿Qué niveles ofrece?», «¿Cuántos periodos tiene su año escolar?», «¿Cómo califican en cada nivel?».
    Cada una muestra: la opción recomendada, una explicación breve, y un enlace «¿por qué me lo preguntan?» con la cita oficial.
 3. **Respuestas inteligentes.** Si la normativa solo permite una opción, ya viene elegida. Si permite varias, se muestran con un ejemplo de cada una.
 4. **«No lo sé».** Siempre existe. El sistema usa el valor por defecto de la normativa y lo marca como **pendiente de verificación**; esos pendientes aparecen en el panel de cumplimiento y bloquean solo las acciones que dependen de ellos (por ejemplo, no se puede cerrar un lapso si falta confirmar su fecha).
 5. **Documentos propios.** El operador puede subir el reglamento interno de la institución o resoluciones de su autorización; el agente propone respuestas a partir de ellos y el operador las confirma una por una. La IA explica y propone; **no decide**.
+   - **La calidad de la interpretación depende del motor.** Cada propuesta indica qué motor y modelo la generó y, si la prueba de capacidad lo recomienda, un aviso de «revisar con cuidado».
+   - **Ajustes en lenguaje natural.** La persona autorizada puede decirle a la IA lo que quiere cambiar («que el lapso 2 cierre el 15», «usa la escala de 1 a 10 en primaria»). El agente rehace la propuesta con su cita e impacto; no se aplica hasta que esa persona la apruebe.
+   - Cada cambio aprobado queda versionado, es reversible y registra quién lo aprobó y qué motor lo propuso.
 6. **Vista previa antes de aplicar.** El sistema muestra cómo quedarían, con datos ficticios, un boletín, un historial y un horario con esa configuración. Quien no conoce la materia ve el resultado, no una lista de parámetros.
 7. **Resumen firmado.** Al terminar se genera un informe con todas las respuestas, sus fuentes y los pendientes; lo aprueba el administrador. Queda como constancia de quién configuró qué y con qué base.
 8. **Cambios posteriores.** Cuando llega un paquete normativo nuevo, el sistema muestra solo lo que cambia y pregunta lo necesario.
+9. **Plantillas de documentos.** En la sección de documentos y reportes, el operador puede subir un formato (PDF, imagen u otro) y obtener una plantilla editable para sus informes, reportes, notificaciones y comunicados (ver `IA-MOTORES-Y-PLANTILLAS.md` §6).
 
 ## 4. Panel de cumplimiento
 
@@ -88,3 +93,4 @@ Ver `ARQUITECTURA.md` (decisión 13): inglés como idioma de trabajo del código
 
 1. Mario revisa este flujo y confirma que describe la experiencia que quiere.
 2. Definir el catálogo inicial de preguntas del perfil de Venezuela a partir de la normativa oficial (lo prepara el agente académico en R2, o a mano en R0).
+3. Mario revisa `IA-MOTORES-Y-PLANTILLAS.md` (niveles de motor, reglas de datos por motor, flujo de plantillas) y confirma.
